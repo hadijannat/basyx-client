@@ -24,14 +24,14 @@ Thank you for your interest in contributing to basyx-client! This document provi
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
-3. Install in development mode with dev dependencies:
+3. Install in development mode with all extras:
    ```bash
-   pip install -e ".[dev]"
+   pip install -e ".[dev,cli,oauth,docs]"
    ```
 
-4. (Optional) Install OAuth support:
+4. Verify CLI installation:
    ```bash
-   pip install -e ".[dev,oauth]"
+   basyx --help
    ```
 
 ## Running Tests
@@ -146,15 +146,52 @@ basyx-client/
 │   ├── exceptions.py        # Exception hierarchy
 │   ├── pagination.py        # Pagination utilities
 │   ├── serialization.py     # BaSyx model serialization
-│   └── endpoints/           # API endpoint implementations
-│       ├── aas_repository.py
-│       ├── submodel_repository.py
-│       ├── submodel_elements.py
-│       └── ...
+│   ├── endpoints/           # API endpoint implementations
+│   │   ├── aas_repository.py
+│   │   ├── submodel_repository.py
+│   │   └── ...
+│   └── cli/                 # Command-line interface
+│       ├── main.py          # CLI entry point
+│       ├── config.py        # Configuration management
+│       ├── output.py        # Output formatters
+│       └── commands/        # Command implementations
+│           ├── shells.py
+│           ├── submodels.py
+│           └── ...
+├── docs/                    # MkDocs documentation
+├── examples/                # Runnable example scripts
 ├── tests/
 │   ├── unit/                # Unit tests (no external deps)
 │   └── integration/         # Integration tests (require Docker)
 └── docker-compose.yml       # BaSyx server setup for testing
+```
+
+## Adding CLI Commands
+
+When adding new CLI commands:
+
+1. Create a command file in `src/basyx_client/cli/commands/`
+2. Follow existing patterns for argument handling
+3. Use output formatters from `output.py` for consistent output
+4. Add error handling with `print_error()` and `typer.Exit(1)`
+5. Write tests in `tests/unit/test_cli.py`
+6. Document in `docs/cli/`
+
+Example command structure:
+```python
+@app.command("list")
+def list_items(
+    ctx: typer.Context,
+    limit: int = typer.Option(100, "--limit", "-l", help="Max results"),
+) -> None:
+    """List all items."""
+    with get_client_from_context(ctx) as client:
+        try:
+            result = client.endpoint.list(limit=limit)
+            format_output(result.result, title="Items")
+        except Exception as e:
+            print_error(f"Failed: {e}")
+            raise typer.Exit(1)
 ```
 
 ## Reporting Issues

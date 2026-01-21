@@ -5,7 +5,9 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 [![CI](https://github.com/hadijannat/basyx-client/actions/workflows/ci.yml/badge.svg)](https://github.com/hadijannat/basyx-client/actions)
 
-A high-level, BaSyx-model-native HTTP client for the AAS Part 2 API v3.x.
+**Python CLI & SDK for the AAS Part 2 API v3.x**
+
+A high-level, BaSyx-model-native HTTP client with first-class CLI support.
 
 ## Why basyx-client?
 
@@ -50,8 +52,67 @@ docker pull ghcr.io/hadijannat/basyx-client:<version>
 
 The image contains Python with `basyx-client` installed and defaults to `python`.
 
+## CLI Quick Start
+
+Install with CLI support:
+
+```bash
+pip install basyx-client[cli]
+```
+
+Use the `basyx` command to interact with AAS servers:
+
+```bash
+# List all AAS shells
+basyx shells list --url http://localhost:8081
+
+# Get a specific shell
+basyx shells get "urn:example:aas:1" --url http://localhost:8081
+
+# Get a submodel element value
+basyx elements get-value "urn:example:sm:1" "Sensors.Temperature"
+
+# Set a value
+basyx elements set-value "urn:example:sm:1" "Sensors.Temperature" "25.5"
+
+# Use JSON output for scripting
+basyx --format json shells list | jq '.[].id'
+```
+
+### CLI Configuration
+
+Save server settings in `~/.basyx/config.yaml`:
+
+```bash
+# Initialize config with defaults
+basyx config init
+
+# Set default server URL
+basyx config set url http://localhost:8081
+
+# Use named profiles
+basyx --profile production shells list
+```
+
+### CLI Commands
+
+| Command Group | Operations |
+|---------------|------------|
+| `basyx shells` | list, get, create, delete, refs, asset-info |
+| `basyx submodels` | list, get, create, delete, value |
+| `basyx elements` | list, get, get-value, set-value, create, delete, invoke |
+| `basyx registry shells` | list, get, create, delete |
+| `basyx registry submodels` | list, get, create, delete |
+| `basyx aasx` | list, get, download, upload, delete |
+| `basyx discovery` | lookup, link, unlink, list-links |
+| `basyx concepts` | list, get, create, delete |
+| `basyx config` | show, set, get, profiles, init |
+
+See `basyx --help` or the [CLI documentation](docs/cli/overview.md) for full details.
+
 ## Features
 
+- **First-class CLI** - Full command-line interface for all API operations
 - **Automatic encoding** - Base64url for identifiers, URL-encoding for idShortPath
 - **Typed responses** - Returns `basyx.aas.model.*` objects, not dictionaries
 - **Sync + async** - Both synchronous and asynchronous operation support
@@ -191,11 +252,21 @@ with AASClient("http://localhost:8081/api/v3.0") as client:
 | AASX Server (`/packages`) | ✅ Full |
 | Discovery (`/lookup/shells`) | ✅ Full |
 
+## Documentation
+
+Full documentation is available at the [docs site](docs/index.md):
+
+- [Getting Started](docs/getting-started/quickstart.md)
+- [CLI Reference](docs/cli/overview.md)
+- [Library Guide](docs/library/client.md)
+- [Examples](docs/examples/basic-crud.md)
+- [API Reference](docs/api-reference/index.md)
+
 ## Development
 
 ```bash
-# Install with dev dependencies
-pip install -e ".[dev]"
+# Install with all dependencies
+pip install -e ".[dev,cli,docs]"
 
 # Run tests
 pytest tests/unit -v
@@ -206,11 +277,18 @@ ruff check src tests
 # Type checking
 mypy src
 
+# Build documentation
+mkdocs serve  # Preview at localhost:8000
+
 # Integration tests (requires Docker)
 docker compose up -d
 pytest tests/integration -v
 docker compose down
 ```
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
