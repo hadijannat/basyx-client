@@ -4,15 +4,16 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
+import httpx
 import typer
 import yaml
 from rich.console import Console
 from rich.table import Table
 
-if TYPE_CHECKING:
-    from basyx_client import AASClient
+from basyx_client import AASClient
+from basyx_client.auth import BearerAuth
 
 console = Console()
 
@@ -111,9 +112,6 @@ class ConfigManager:
 
 def get_client_from_context(ctx: typer.Context) -> AASClient:
     """Create an AASClient from the CLI context."""
-    from basyx_client import AASClient
-    from basyx_client.auth import BearerAuth
-
     config_mgr: ConfigManager = ctx.obj["config"]
     profile = config_mgr.get_profile(ctx.obj.get("profile"))
 
@@ -124,7 +122,7 @@ def get_client_from_context(ctx: typer.Context) -> AASClient:
         raise typer.Exit(1)
 
     # Authentication priority: --token flag > env var > profile
-    auth = None
+    auth: httpx.Auth | None = None
     token = ctx.obj.get("token")
     if token:
         auth = BearerAuth(token)

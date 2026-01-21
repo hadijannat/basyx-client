@@ -34,14 +34,13 @@ def lookup(
 
     with get_client_from_context(ctx) as client:
         try:
-            result = client.discovery.lookup(
-                asset_id_type=asset_id_type,
-                asset_id_value=asset_id_value,
+            result = client.discovery.get_aas_ids_by_asset(
+                [{"name": asset_id_type, "value": asset_id_value}],
                 limit=limit,
                 cursor=cursor,
             )
 
-            aas_ids = result.result
+            aas_ids = result.items
             if not aas_ids:
                 console.print("[yellow]No AAS found for this asset ID[/yellow]")
                 return
@@ -54,10 +53,8 @@ def lookup(
                 title=f"AAS IDs for {asset_id_type}={asset_id_value}",
             )
 
-            if result.paging_metadata and result.paging_metadata.get("cursor"):
-                console.print(
-                    f"[dim]More results available. Use --cursor {result.paging_metadata['cursor']}[/dim]"
-                )
+            if result.has_more and result.cursor:
+                console.print(f"[dim]More results available. Use --cursor {result.cursor}[/dim]")
         except Exception as e:
             print_error(f"Failed to lookup: {e}")
             raise typer.Exit(1)
@@ -79,10 +76,9 @@ def link(
 
     with get_client_from_context(ctx) as client:
         try:
-            client.discovery.link(
+            client.discovery.link_aas_to_asset(
                 aas_id=aas_id,
-                asset_id_type=asset_id_type,
-                asset_id_value=asset_id_value,
+                asset_ids=[{"name": asset_id_type, "value": asset_id_value}],
             )
             print_success(f"Linked {asset_id_type}={asset_id_value} to AAS {aas_id}")
         except Exception as e:
@@ -113,10 +109,9 @@ def unlink(
 
     with get_client_from_context(ctx) as client:
         try:
-            client.discovery.unlink(
+            client.discovery.unlink_asset_from_aas(
                 aas_id=aas_id,
-                asset_id_type=asset_id_type,
-                asset_id_value=asset_id_value,
+                asset_id={"name": asset_id_type, "value": asset_id_value},
             )
             print_success(f"Unlinked {asset_id_type}={asset_id_value} from AAS {aas_id}")
         except Exception as e:
@@ -134,7 +129,7 @@ def list_links(
 
     with get_client_from_context(ctx) as client:
         try:
-            links = client.discovery.get_links(aas_id)
+            links = client.discovery.get_asset_links(aas_id)
             if not links:
                 console.print(f"[yellow]No asset IDs linked to AAS {aas_id}[/yellow]")
                 return

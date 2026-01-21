@@ -470,6 +470,43 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         )
         return cast("dict[str, Any]", response) if response else {}
 
+    def invoke_async(
+        self,
+        submodel_id: str,
+        id_short_path: str,
+        input_arguments: list[dict[str, Any]] | None = None,
+        inoutput_arguments: list[dict[str, Any]] | None = None,
+    ) -> str:
+        """
+        Start an asynchronous operation invocation.
+
+        Args:
+            submodel_id: The identifier of the submodel
+            id_short_path: Path to the operation
+            input_arguments: Input arguments for the operation
+            inoutput_arguments: In/out arguments for the operation
+
+        Returns:
+            Handle ID for checking operation status
+        """
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+
+        payload: dict[str, Any] = {}
+        if input_arguments:
+            payload["inputArguments"] = input_arguments
+        if inoutput_arguments:
+            payload["inoutputArguments"] = inoutput_arguments
+
+        response = self._request(
+            "POST",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/invoke-async",
+            json=payload,
+        )
+        if response is None or isinstance(response, list):
+            return ""
+        return str(response.get("handleId", ""))
+
     async def invoke_async_operation(
         self,
         submodel_id: str,
@@ -699,6 +736,24 @@ class SubmodelRepositoryEndpoint(BaseEndpoint):
         params = {"level": level}
         response = await self._request_async("GET", f"/submodels/{encoded_id}", params=params)
         return deserialize_submodel(cast("dict[str, Any]", response))
+
+    def get_value(self, submodel_id: str) -> Any:
+        """
+        Get the $value serialization of a submodel.
+
+        Args:
+            submodel_id: The identifier of the submodel
+
+        Returns:
+            The submodel $value representation
+        """
+        encoded_id = encode_identifier(submodel_id)
+        return self._request("GET", f"/submodels/{encoded_id}/$value")
+
+    async def get_value_async(self, submodel_id: str) -> Any:
+        """Async version of get_value()."""
+        encoded_id = encode_identifier(submodel_id)
+        return await self._request_async("GET", f"/submodels/{encoded_id}/$value")
 
     def create(self, submodel: model.Submodel) -> model.Submodel:
         """

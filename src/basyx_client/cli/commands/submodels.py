@@ -56,14 +56,17 @@ def list_submodels(
 
                 submodels = list(
                     iterate_pages(
-                        client.submodels.list,
-                        limit=limit,
-                        semantic_id=semantic_id,
+                        lambda page_limit, page_cursor: client.submodels.list(
+                            limit=page_limit,
+                            cursor=page_cursor,
+                            semantic_id=semantic_id,
+                        ),
+                        page_size=limit,
                     )
                 )
             else:
                 result = client.submodels.list(limit=limit, cursor=cursor, semantic_id=semantic_id)
-                submodels = result.result
+                submodels = result.items
 
             format_output(
                 submodels,

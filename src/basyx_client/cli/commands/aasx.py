@@ -42,10 +42,19 @@ def list_packages(
             if all_pages:
                 from basyx_client.pagination import iterate_pages
 
-                packages = list(iterate_pages(client.packages.list, limit=limit, aas_id=aas_id))
+                packages = list(
+                    iterate_pages(
+                        lambda page_limit, page_cursor: client.packages.list(
+                            limit=page_limit,
+                            cursor=page_cursor,
+                            aas_id=aas_id,
+                        ),
+                        page_size=limit,
+                    )
+                )
             else:
                 result = client.packages.list(limit=limit, cursor=cursor, aas_id=aas_id)
-                packages = result.result
+                packages = result.items
 
             format_output(
                 packages,
@@ -71,7 +80,8 @@ def get_package(
 
     with get_client_from_context(ctx) as client:
         try:
-            info = client.packages.get_info(package_id)
+            content = client.packages.get(package_id)
+            info = {"package_id": package_id, "size_bytes": len(content)}
             format_output(info, title="AASX Package Info")
         except Exception as e:
             print_error(f"Failed to get package info: {e}")
@@ -96,7 +106,7 @@ def download_package(
 
     with get_client_from_context(ctx) as client:
         try:
-            content = client.packages.download(package_id)
+            content = client.packages.get(package_id)
             with open(output_path, "wb") as f:
                 f.write(content)
             print_success(f"Downloaded package to: {output_path}")
@@ -122,16 +132,15 @@ def upload_package(
 
     with get_client_from_context(ctx) as client:
         try:
-            with open(file, "rb") as f:
-                content = f.read()
-
-            result = client.packages.upload(
-                content,
-                filename=file.name,
-                aas_id=aas_id,
+            package_id = client.packages.upload(
+                file,
+                aas_ids=[aas_id] if aas_id else None,
             )
-            print_success(f"Uploaded package: {result.get('packageId', 'unknown')}")
-            format_output(result, extract_fn=_extract_package_summary)
+            print_success(f"Uploaded package: {package_id}")
+            format_output(
+                {"packageId": package_id, "aasIds": [aas_id] if aas_id else []},
+                extract_fn=_extract_package_summary,
+            )
         except Exception as e:
             print_error(f"Failed to upload package: {e}")
             raise typer.Exit(1)

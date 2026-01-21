@@ -61,13 +61,17 @@ def list_elements(
 
                 elements = list(
                     iterate_pages(
-                        lambda **kw: client.submodels.elements.list(submodel_id, **kw),
-                        limit=limit,
+                        lambda page_limit, page_cursor: client.submodels.elements.list(
+                            submodel_id,
+                            limit=page_limit,
+                            cursor=page_cursor,
+                        ),
+                        page_size=limit,
                     )
                 )
             else:
                 result = client.submodels.elements.list(submodel_id, limit=limit, cursor=cursor)
-                elements = result.result
+                elements = result.items
 
             format_output(
                 elements,
@@ -171,9 +175,9 @@ def create_element(
                 data = json.load(f)
 
             if parent_path:
-                elem = client.submodels.elements.create_nested(submodel_id, parent_path, data)
+                elem = client.submodels.elements.create(submodel_id, parent_path, data)
             else:
-                elem = client.submodels.elements.create(submodel_id, data)
+                elem = client.submodels.elements.create_root(submodel_id, data)
 
             print_success(f"Created element: {getattr(elem, 'id_short', 'unknown')}")
             format_output(elem, extract_fn=_extract_element_summary)
@@ -243,14 +247,13 @@ def invoke_operation(
     with get_client_from_context(ctx) as client:
         try:
             if async_mode:
-                result = client.submodels.elements.invoke_async(
+                handle_id = client.submodels.elements.invoke_async(
                     submodel_id,
                     id_short_path,
                     input_arguments=input_args,
                     inoutput_arguments=inout_args,
-                    timeout=timeout,
                 )
-                console.print(f"[blue]Operation started. Handle: {result}[/blue]")
+                console.print(f"[blue]Operation started. Handle: {handle_id}[/blue]")
             else:
                 result = client.submodels.elements.invoke(
                     submodel_id,

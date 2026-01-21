@@ -17,8 +17,11 @@ class MockShell:
     def __init__(self, id: str, id_short: str):
         self.id = id
         self.id_short = id_short
-        self.asset_information = MagicMock()
-        self.asset_information.global_asset_id = f"urn:asset:{id_short}"
+        self.asset_information = type(
+            "MockAssetInfo",
+            (),
+            {"global_asset_id": f"urn:asset:{id_short}"},
+        )()
 
 
 class MockSubmodel:
@@ -87,23 +90,26 @@ class TestShellsCommands:
             MockShell("urn:aas:2", "Shell2"),
         ]
         mock_client.shells.list.return_value = PaginatedResult(
-            result=mock_shells,
-            paging_metadata=None,
+            items=mock_shells,
+            cursor=None,
+            has_more=False,
         )
 
-        result = runner.invoke(app, ["shells", "list", "--url", "http://test:8081"])
+        result = runner.invoke(app, ["--url", "http://test:8081", "shells", "list"])
         assert result.exit_code == 0
 
     def test_shells_list_json(self, mock_client):
         """Test basyx shells list --format json."""
         mock_shells = [MockShell("urn:aas:1", "Shell1")]
         mock_client.shells.list.return_value = PaginatedResult(
-            result=mock_shells,
-            paging_metadata=None,
+            items=mock_shells,
+            cursor=None,
+            has_more=False,
         )
 
         result = runner.invoke(
-            app, ["--format", "json", "shells", "list", "--url", "http://test:8081"]
+            app,
+            ["--format", "json", "--url", "http://test:8081", "shells", "list"],
         )
         assert result.exit_code == 0
 
@@ -111,7 +117,7 @@ class TestShellsCommands:
         """Test basyx shells get."""
         mock_client.shells.get.return_value = MockShell("urn:aas:1", "Shell1")
 
-        result = runner.invoke(app, ["shells", "get", "urn:aas:1", "--url", "http://test:8081"])
+        result = runner.invoke(app, ["--url", "http://test:8081", "shells", "get", "urn:aas:1"])
         assert result.exit_code == 0
 
 
@@ -125,11 +131,12 @@ class TestSubmodelsCommands:
             MockSubmodel("urn:sm:2", "Submodel2"),
         ]
         mock_client.submodels.list.return_value = PaginatedResult(
-            result=mock_sms,
-            paging_metadata=None,
+            items=mock_sms,
+            cursor=None,
+            has_more=False,
         )
 
-        result = runner.invoke(app, ["submodels", "list", "--url", "http://test:8081"])
+        result = runner.invoke(app, ["--url", "http://test:8081", "submodels", "list"])
         assert result.exit_code == 0
 
     def test_submodels_get(self, mock_client):
@@ -137,7 +144,7 @@ class TestSubmodelsCommands:
         mock_sm = MockSubmodel("urn:sm:1", "Submodel1")
         mock_client.submodels.get.return_value = mock_sm
 
-        result = runner.invoke(app, ["submodels", "get", "urn:sm:1", "--url", "http://test:8081"])
+        result = runner.invoke(app, ["--url", "http://test:8081", "submodels", "get", "urn:sm:1"])
         assert result.exit_code == 0
 
 
@@ -151,11 +158,12 @@ class TestElementsCommands:
             MockProperty("Status", "OK", "xs:string"),
         ]
         mock_client.submodels.elements.list.return_value = PaginatedResult(
-            result=mock_elements,
-            paging_metadata=None,
+            items=mock_elements,
+            cursor=None,
+            has_more=False,
         )
 
-        result = runner.invoke(app, ["elements", "list", "urn:sm:1", "--url", "http://test:8081"])
+        result = runner.invoke(app, ["--url", "http://test:8081", "elements", "list", "urn:sm:1"])
         assert result.exit_code == 0
 
     def test_elements_get_value(self, mock_client):
@@ -164,7 +172,7 @@ class TestElementsCommands:
 
         result = runner.invoke(
             app,
-            ["elements", "get-value", "urn:sm:1", "Temperature", "--url", "http://test:8081"],
+            ["--url", "http://test:8081", "elements", "get-value", "urn:sm:1", "Temperature"],
         )
         assert result.exit_code == 0
 
@@ -173,13 +181,13 @@ class TestElementsCommands:
         result = runner.invoke(
             app,
             [
+                "--url",
+                "http://test:8081",
                 "elements",
                 "set-value",
                 "urn:sm:1",
                 "Temperature",
                 "30.0",
-                "--url",
-                "http://test:8081",
             ],
         )
         assert result.exit_code == 0
@@ -206,24 +214,28 @@ class TestOutputFormats:
     def test_format_table(self, mock_client):
         """Test table output format."""
         mock_client.shells.list.return_value = PaginatedResult(
-            result=[MockShell("urn:aas:1", "Shell1")],
-            paging_metadata=None,
+            items=[MockShell("urn:aas:1", "Shell1")],
+            cursor=None,
+            has_more=False,
         )
 
         result = runner.invoke(
-            app, ["--format", "table", "shells", "list", "--url", "http://test:8081"]
+            app,
+            ["--format", "table", "--url", "http://test:8081", "shells", "list"],
         )
         assert result.exit_code == 0
 
     def test_format_yaml(self, mock_client):
         """Test YAML output format."""
         mock_client.shells.list.return_value = PaginatedResult(
-            result=[MockShell("urn:aas:1", "Shell1")],
-            paging_metadata=None,
+            items=[MockShell("urn:aas:1", "Shell1")],
+            cursor=None,
+            has_more=False,
         )
 
         result = runner.invoke(
-            app, ["--format", "yaml", "shells", "list", "--url", "http://test:8081"]
+            app,
+            ["--format", "yaml", "--url", "http://test:8081", "shells", "list"],
         )
         assert result.exit_code == 0
 
@@ -237,7 +249,7 @@ class TestErrorHandling:
 
         mock_client.shells.list.side_effect = ConnectionError("Connection refused")
 
-        result = runner.invoke(app, ["shells", "list", "--url", "http://test:8081"])
+        result = runner.invoke(app, ["--url", "http://test:8081", "shells", "list"])
         assert result.exit_code == 1
         assert "Failed" in result.stdout or "Connection" in result.stdout
 
@@ -247,5 +259,5 @@ class TestErrorHandling:
 
         mock_client.shells.get.side_effect = ResourceNotFoundError("Not found")
 
-        result = runner.invoke(app, ["shells", "get", "nonexistent", "--url", "http://test:8081"])
+        result = runner.invoke(app, ["--url", "http://test:8081", "shells", "get", "nonexistent"])
         assert result.exit_code == 1

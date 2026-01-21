@@ -62,16 +62,19 @@ def list_concepts(
 
                 concepts = list(
                     iterate_pages(
-                        client.concept_descriptions.list,
-                        limit=limit,
-                        id_short=id_short,
+                        lambda page_limit, page_cursor: client.concept_descriptions.list(
+                            limit=page_limit,
+                            cursor=page_cursor,
+                            id_short=id_short,
+                        ),
+                        page_size=limit,
                     )
                 )
             else:
                 result = client.concept_descriptions.list(
                     limit=limit, cursor=cursor, id_short=id_short
                 )
-                concepts = result.result
+                concepts = result.items
 
             format_output(
                 concepts,

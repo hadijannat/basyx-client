@@ -48,10 +48,18 @@ def list_shells(
             if all_pages:
                 from basyx_client.pagination import iterate_pages
 
-                shells = list(iterate_pages(client.shells.list, limit=limit))
+                shells = list(
+                    iterate_pages(
+                        lambda page_limit, page_cursor: client.shells.list(
+                            limit=page_limit,
+                            cursor=page_cursor,
+                        ),
+                        page_size=limit,
+                    )
+                )
             else:
                 result = client.shells.list(limit=limit, cursor=cursor)
-                shells = result.result
+                shells = result.items
 
             format_output(
                 shells,
@@ -147,8 +155,8 @@ def get_submodel_refs(
 
     with get_client_from_context(ctx) as client:
         try:
-            refs = client.shells.get_submodel_refs(aas_id)
-            if not refs:
+            refs = client.shells.list_submodel_refs(aas_id)
+            if refs is None or len(refs) == 0:
                 console.print("[yellow]No submodel references found[/yellow]")
                 return
 

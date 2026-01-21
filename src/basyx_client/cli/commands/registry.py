@@ -72,10 +72,17 @@ def list_aas_descriptors(
             if all_pages:
                 from basyx_client.pagination import iterate_pages
 
-                descriptors = list(iterate_pages(client.aas_registry.list, limit=limit))
+                descriptors = list(
+                    iterate_pages(
+                        lambda page_limit, page_cursor: client.aas_registry.list(
+                            limit=page_limit, cursor=page_cursor
+                        ),
+                        page_size=limit,
+                    )
+                )
             else:
                 result = client.aas_registry.list(limit=limit, cursor=cursor)
-                descriptors = result.result
+                descriptors = result.items
 
             format_output(
                 descriptors,
@@ -179,10 +186,17 @@ def list_sm_descriptors(
             if all_pages:
                 from basyx_client.pagination import iterate_pages
 
-                descriptors = list(iterate_pages(client.submodel_registry.list, limit=limit))
+                descriptors = list(
+                    iterate_pages(
+                        lambda page_limit, page_cursor: client.submodel_registry.list(
+                            limit=page_limit, cursor=page_cursor
+                        ),
+                        page_size=limit,
+                    )
+                )
             else:
                 result = client.submodel_registry.list(limit=limit, cursor=cursor)
-                descriptors = result.result
+                descriptors = result.items
 
             format_output(
                 descriptors,
