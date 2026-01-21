@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-01-21
+
+### Added
+- Root-level SubmodelElement creation helpers
+- Canonical $value serialization for booleans, datetimes, bytes, and enums
+- Configurable encoding toggles for Discovery assetIds and AASX package IDs
+- Expanded unit coverage for edge cases and async helpers
+
+### Fixed
+- Update endpoints now refetch on 204 No Content responses
+- Examples aligned with Docker compose base URLs
+
 ## [0.1.0] - 2025-01-22
 
 ### Added
@@ -26,3 +38,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sync and async client support via httpx
 
 [0.1.0]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.0
+[0.1.1]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.1

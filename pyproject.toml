@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "basyx-client"
-version = "0.1.0"
+version = "0.1.1"
 description = "High-level HTTP client for the AAS Part 2 API v3.x"
 readme = "README.md"
 license = "Apache-2.0"
