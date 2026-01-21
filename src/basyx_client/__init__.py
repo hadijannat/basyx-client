@@ -23,7 +23,7 @@ from basyx_client.exceptions import (
 )
 from basyx_client.pagination import PaginatedResult
 
-__version__ = "0.1.1"
+__version__ = "0.1.2rc1"
 
 __all__ = [
     "AASClient",

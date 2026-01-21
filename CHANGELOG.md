@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2rc1] - 2026-01-21
+
+### Added
+- TestPyPI prerelease for trusted publisher verification
+
 ## [0.1.1] - 2026-01-21
 
 ### Added
@@ -39,3 +44,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.1.0]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.0
 [0.1.1]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.1
+[0.1.2rc1]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.2rc1
