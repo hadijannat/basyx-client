@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-01-21
+
+### Added
+- Submodel $value retrieval helpers at the repository level
+- Sync wrapper for async operation invocation on submodel elements
+- types-PyYAML for dev mypy runs
+
+### Fixed
+- CLI aligned with endpoint method names and pagination result shape
+- AASX CLI uses package download/upload entrypoints consistently
+- Discovery CLI maps to discovery endpoint APIs
+
 ## [0.1.3] - 2026-01-21
 
 ### Added
@@ -54,3 +66,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.1]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.1
 [0.1.2]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.2
 [0.1.3]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.3
+[0.1.4]: https://github.com/hadijannat/basyx-client/releases/tag/v0.1.4
