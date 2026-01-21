@@ -147,6 +147,60 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         )
         return response
 
+    def get_metadata(self, submodel_id: str, id_short_path: str) -> dict[str, Any] | list[Any] | None:
+        """
+        Get the metadata of a submodel element.
+
+        Args:
+            submodel_id: The identifier of the submodel
+            id_short_path: Path to the element
+
+        Returns:
+            Metadata document for the element
+        """
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        return self._request(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$metadata",
+        )
+
+    def get_reference(self, submodel_id: str, id_short_path: str) -> dict[str, Any] | list[Any] | None:
+        """
+        Get the reference of a submodel element.
+
+        Args:
+            submodel_id: The identifier of the submodel
+            id_short_path: Path to the element
+
+        Returns:
+            Reference document for the element
+        """
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        return self._request(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$reference",
+        )
+
+    def get_path(self, submodel_id: str, id_short_path: str) -> dict[str, Any] | list[Any] | None:
+        """
+        Get the path of a submodel element.
+
+        Args:
+            submodel_id: The identifier of the submodel
+            id_short_path: Path to the element
+
+        Returns:
+            Path document for the element
+        """
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        return self._request(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$path",
+        )
+
     async def get_value_async(self, submodel_id: str, id_short_path: str) -> Any:
         """Async version of get_value()."""
         encoded_sm_id = encode_identifier(submodel_id)
@@ -156,6 +210,39 @@ class SubmodelElementsEndpoint(BaseEndpoint):
             f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$value",
         )
         return response
+
+    async def get_metadata_async(
+        self, submodel_id: str, id_short_path: str
+    ) -> dict[str, Any] | list[Any] | None:
+        """Async version of get_metadata()."""
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        return await self._request_async(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$metadata",
+        )
+
+    async def get_reference_async(
+        self, submodel_id: str, id_short_path: str
+    ) -> dict[str, Any] | list[Any] | None:
+        """Async version of get_reference()."""
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        return await self._request_async(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$reference",
+        )
+
+    async def get_path_async(
+        self, submodel_id: str, id_short_path: str
+    ) -> dict[str, Any] | list[Any] | None:
+        """Async version of get_path()."""
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        return await self._request_async(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$path",
+        )
 
     def set_value(self, submodel_id: str, id_short_path: str, value: Any) -> None:
         """
@@ -415,6 +502,74 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         if response is None or isinstance(response, list):
             return ""
         return str(response.get("handleId", ""))
+
+    def get_async_operation_status(
+        self,
+        submodel_id: str,
+        id_short_path: str,
+        handle_id: str,
+    ) -> dict[str, Any] | list[Any] | None:
+        """
+        Get the status of an async operation invocation.
+
+        Note: Some servers return the result in this response.
+        """
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        encoded_handle = encode_identifier(handle_id)
+        return self._request(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/invoke-async/{encoded_handle}",
+        )
+
+    async def get_async_operation_status_async(
+        self,
+        submodel_id: str,
+        id_short_path: str,
+        handle_id: str,
+    ) -> dict[str, Any] | list[Any] | None:
+        """Async version of get_async_operation_status()."""
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        encoded_handle = encode_identifier(handle_id)
+        return await self._request_async(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/invoke-async/{encoded_handle}",
+        )
+
+    def get_async_operation_result(
+        self,
+        submodel_id: str,
+        id_short_path: str,
+        handle_id: str,
+    ) -> dict[str, Any] | list[Any] | None:
+        """
+        Get the result of an async operation invocation.
+
+        Note: Some servers may not implement the /result suffix.
+        """
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        encoded_handle = encode_identifier(handle_id)
+        return self._request(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/invoke-async/{encoded_handle}/result",
+        )
+
+    async def get_async_operation_result_async(
+        self,
+        submodel_id: str,
+        id_short_path: str,
+        handle_id: str,
+    ) -> dict[str, Any] | list[Any] | None:
+        """Async version of get_async_operation_result()."""
+        encoded_sm_id = encode_identifier(submodel_id)
+        encoded_path = encode_id_short_path(id_short_path)
+        encoded_handle = encode_identifier(handle_id)
+        return await self._request_async(
+            "GET",
+            f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/invoke-async/{encoded_handle}/result",
+        )
 
     def _parse_paginated_response(
         self,

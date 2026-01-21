@@ -58,6 +58,7 @@ The image contains Python with `basyx-client` installed and defaults to `python`
 - **Full auth suite** - Bearer, Basic, OAuth2 client credentials, mTLS certificates
 - **Proper exceptions** - `ResourceNotFoundError`, `ConflictError`, etc. instead of generic errors
 - **Pagination helpers** - Easy iteration through paginated results
+- **Element helpers** - `$metadata`, `$reference`, `$path`, async operation status/result
 
 ## Quick Start
 

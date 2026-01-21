@@ -57,6 +57,57 @@ def test_discovery_get_asset_links_list_response(monkeypatch: pytest.MonkeyPatch
     client.close()
 
 
+def test_discovery_unlink_specific_asset(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = AASClient("http://example.com", encode_discovery_asset_ids=True)
+    endpoint = client.discovery
+
+    encoded_aas = encode_identifier("urn:example:aas:1")
+    encoded_asset = encode_identifier("serial:SN-1")
+
+    captured: dict[str, object] = {}
+
+    def fake_request(method: str, path: str, **_kwargs: object) -> None:
+        captured["method"] = method
+        captured["path"] = path
+        return None
+
+    monkeypatch.setattr(endpoint, "_request", fake_request)
+
+    endpoint.unlink_asset_from_aas("urn:example:aas:1", {"name": "serial", "value": "SN-1"})
+
+    assert captured["method"] == "DELETE"
+    assert captured["path"] == f"/lookup/shells/{encoded_aas}/{encoded_asset}"
+    client.close()
+
+
+@pytest.mark.asyncio
+async def test_discovery_unlink_specific_asset_async(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = AASClient("http://example.com", encode_discovery_asset_ids=True)
+    endpoint = client.discovery
+
+    encoded_aas = encode_identifier("urn:example:aas:1")
+    encoded_asset = encode_identifier("serial:SN-1")
+
+    captured: dict[str, object] = {}
+
+    async def fake_request_async(method: str, path: str, **_kwargs: object) -> None:
+        captured["method"] = method
+        captured["path"] = path
+        return None
+
+    monkeypatch.setattr(endpoint, "_request_async", fake_request_async)
+
+    await endpoint.unlink_asset_from_aas_async(
+        "urn:example:aas:1", {"name": "serial", "value": "SN-1"}
+    )
+
+    assert captured["method"] == "DELETE"
+    assert captured["path"] == f"/lookup/shells/{encoded_aas}/{encoded_asset}"
+    await client.aclose()
+
+
 @pytest.mark.asyncio
 async def test_invoke_async_returns_handle_id(monkeypatch: pytest.MonkeyPatch) -> None:
     client = AASClient("http://example.com")
@@ -90,6 +141,93 @@ async def test_invoke_async_returns_empty_on_none(monkeypatch: pytest.MonkeyPatc
     assert handle == ""
     await client.aclose()
 
+
+def test_async_operation_status(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = AASClient("http://example.com")
+    elements = SubmodelRepositoryEndpoint(client).elements
+
+    encoded_sm = encode_identifier("urn:example:sm:1")
+    encoded_handle = encode_identifier("handle-1")
+
+    def fake_request(method: str, path: str, **_kwargs: object) -> dict:
+        assert method == "GET"
+        assert path == f"/submodels/{encoded_sm}/submodel-elements/Op/invoke-async/{encoded_handle}"
+        return {"status": "running"}
+
+    monkeypatch.setattr(elements, "_request", fake_request)
+
+    result = elements.get_async_operation_status("urn:example:sm:1", "Op", "handle-1")
+    assert result == {"status": "running"}
+    client.close()
+
+
+def test_async_operation_result(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = AASClient("http://example.com")
+    elements = SubmodelRepositoryEndpoint(client).elements
+
+    encoded_sm = encode_identifier("urn:example:sm:1")
+    encoded_handle = encode_identifier("handle-1")
+
+    def fake_request(method: str, path: str, **_kwargs: object) -> dict:
+        assert method == "GET"
+        assert (
+            path
+            == f"/submodels/{encoded_sm}/submodel-elements/Op/invoke-async/{encoded_handle}/result"
+        )
+        return {"outputArguments": []}
+
+    monkeypatch.setattr(elements, "_request", fake_request)
+
+    result = elements.get_async_operation_result("urn:example:sm:1", "Op", "handle-1")
+    assert result == {"outputArguments": []}
+    client.close()
+
+
+@pytest.mark.asyncio
+async def test_async_operation_status_async(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = AASClient("http://example.com")
+    elements = SubmodelRepositoryEndpoint(client).elements
+
+    encoded_sm = encode_identifier("urn:example:sm:1")
+    encoded_handle = encode_identifier("handle-1")
+
+    async def fake_request_async(method: str, path: str, **_kwargs: object) -> dict:
+        assert method == "GET"
+        assert path == f"/submodels/{encoded_sm}/submodel-elements/Op/invoke-async/{encoded_handle}"
+        return {"status": "running"}
+
+    monkeypatch.setattr(elements, "_request_async", fake_request_async)
+
+    result = await elements.get_async_operation_status_async(
+        "urn:example:sm:1", "Op", "handle-1"
+    )
+    assert result == {"status": "running"}
+    await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_async_operation_result_async(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = AASClient("http://example.com")
+    elements = SubmodelRepositoryEndpoint(client).elements
+
+    encoded_sm = encode_identifier("urn:example:sm:1")
+    encoded_handle = encode_identifier("handle-1")
+
+    async def fake_request_async(method: str, path: str, **_kwargs: object) -> dict:
+        assert method == "GET"
+        assert (
+            path
+            == f"/submodels/{encoded_sm}/submodel-elements/Op/invoke-async/{encoded_handle}/result"
+        )
+        return {"outputArguments": []}
+
+    monkeypatch.setattr(elements, "_request_async", fake_request_async)
+
+    result = await elements.get_async_operation_result_async(
+        "urn:example:sm:1", "Op", "handle-1"
+    )
+    assert result == {"outputArguments": []}
+    await client.aclose()
 
 def test_aasx_upload_sends_file_and_params(
     monkeypatch: pytest.MonkeyPatch,

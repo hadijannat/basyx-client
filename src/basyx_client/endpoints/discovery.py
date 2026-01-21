@@ -166,6 +166,39 @@ class DiscoveryEndpoint(BaseEndpoint):
         encoded_id = encode_identifier(aas_id)
         await self._request_async("DELETE", f"/lookup/shells/{encoded_id}")
 
+    def unlink_asset_from_aas(self, aas_id: str, asset_id: dict[str, str]) -> None:
+        """
+        Remove a specific asset identifier link from an AAS.
+
+        Args:
+            aas_id: The identifier of the AAS
+            asset_id: Asset identifier dict with "name" and "value"
+        """
+        encoded_aas = encode_identifier(aas_id)
+        asset_string = f"{asset_id['name']}:{asset_id['value']}"
+        encoded_asset = (
+            encode_identifier(asset_string)
+            if self._client._encode_discovery_asset_ids
+            else asset_string
+        )
+        self._request("DELETE", f"/lookup/shells/{encoded_aas}/{encoded_asset}")
+
+    async def unlink_asset_from_aas_async(
+        self, aas_id: str, asset_id: dict[str, str]
+    ) -> None:
+        """Async version of unlink_asset_from_aas()."""
+        encoded_aas = encode_identifier(aas_id)
+        asset_string = f"{asset_id['name']}:{asset_id['value']}"
+        encoded_asset = (
+            encode_identifier(asset_string)
+            if self._client._encode_discovery_asset_ids
+            else asset_string
+        )
+        await self._request_async(
+            "DELETE",
+            f"/lookup/shells/{encoded_aas}/{encoded_asset}",
+        )
+
     def get_asset_links(
         self,
         aas_id: str,
