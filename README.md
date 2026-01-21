@@ -40,6 +40,16 @@ with AASClient("http://localhost:8081") as client:
 pip install basyx-client
 ```
 
+## Docker (GHCR)
+
+The GitHub Actions workflow publishes a Docker image on release:
+
+```bash
+docker pull ghcr.io/hadijannat/basyx-client:<version>
+```
+
+The image contains Python with `basyx-client` installed and defaults to `python`.
+
 ## Features
 
 - **Automatic encoding** - Base64url for identifiers, URL-encoding for idShortPath
