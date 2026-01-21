@@ -1,5 +1,10 @@
 # basyx-client
 
+[![PyPI version](https://img.shields.io/pypi/v/basyx-client)](https://pypi.org/project/basyx-client/)
+[![Python versions](https://img.shields.io/pypi/pyversions/basyx-client)](https://pypi.org/project/basyx-client/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
+[![CI](https://github.com/hadijannat/basyx-client/actions/workflows/ci.yml/badge.svg)](https://github.com/hadijannat/basyx-client/actions)
+
 A high-level, BaSyx-model-native HTTP client for the AAS Part 2 API v3.x.
 
 ## Why basyx-client?
