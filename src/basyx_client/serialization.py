@@ -134,7 +134,7 @@ def serialize(obj: model.Referable) -> dict[str, Any]:
     Returns:
         Dictionary suitable for JSON API request body
     """
-    encoder = aas_json.StrictStrippedAASToJsonEncoder()  # type: ignore[attr-defined]
+    encoder = aas_json.AASToJsonEncoder()  # type: ignore[attr-defined]
     json_str = encoder.encode(obj)  # type: ignore[no-untyped-call]
     result: dict[str, Any] = json.loads(json_str)
     return result

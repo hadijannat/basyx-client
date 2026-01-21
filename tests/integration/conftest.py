@@ -26,11 +26,13 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 # Default URLs for BaSyx services (can be overridden via environment)
-AAS_REPOSITORY_URL = os.environ.get("AAS_REPOSITORY_URL", "http://localhost:8081/api/v3.0")
+# Note: BaSyx Docker images serve API at root, not /api/v3.0
+AAS_REPOSITORY_URL = os.environ.get("AAS_REPOSITORY_URL", "http://localhost:8081")
 SUBMODEL_REPOSITORY_URL = os.environ.get(
-    "SUBMODEL_REPOSITORY_URL", "http://localhost:8082/api/v3.0"
+    "SUBMODEL_REPOSITORY_URL", "http://localhost:8082"
 )
-AAS_REGISTRY_URL = os.environ.get("AAS_REGISTRY_URL", "http://localhost:8084/api/v3.0")
+AAS_REGISTRY_URL = os.environ.get("AAS_REGISTRY_URL", "http://localhost:8084")
+SUBMODEL_REGISTRY_URL = os.environ.get("SUBMODEL_REGISTRY_URL", "http://localhost:8085")
 
 
 @pytest.fixture
@@ -51,6 +53,13 @@ def submodel_client() -> Generator[AASClient, None, None]:
 def registry_client() -> Generator[AASClient, None, None]:
     """Create a client for the AAS Registry service."""
     with AASClient(AAS_REGISTRY_URL) as client:
+        yield client
+
+
+@pytest.fixture
+def submodel_registry_client() -> Generator[AASClient, None, None]:
+    """Create a client for the Submodel Registry service."""
+    with AASClient(SUBMODEL_REGISTRY_URL) as client:
         yield client
 
 

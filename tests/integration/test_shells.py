@@ -11,8 +11,10 @@ from typing import TYPE_CHECKING
 import pytest
 from basyx.aas import model
 
+from basyx_client import AASClient
+
 if TYPE_CHECKING:
-    from basyx_client import AASClient
+    pass
 
 
 @pytest.mark.integration

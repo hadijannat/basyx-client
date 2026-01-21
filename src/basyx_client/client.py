@@ -173,25 +173,25 @@ class AASClient:
 
     def _get_sync_client(self) -> httpx.Client:
         """Get or create the synchronous HTTP client."""
-        if self._sync_client is None:
-            self._sync_client = httpx.Client(
+        if self.__dict__["_sync_client"] is None:
+            self.__dict__["_sync_client"] = httpx.Client(
                 auth=self._auth,
                 timeout=self._timeout,
                 verify=self._verify_ssl,
                 cert=self._cert,
             )
-        return self._sync_client
+        return self.__dict__["_sync_client"]
 
     def _get_async_client(self) -> httpx.AsyncClient:
         """Get or create the asynchronous HTTP client."""
-        if self._async_client is None:
-            self._async_client = httpx.AsyncClient(
+        if self.__dict__["_async_client"] is None:
+            self.__dict__["_async_client"] = httpx.AsyncClient(
                 auth=self._auth,
                 timeout=self._timeout,
                 verify=self._verify_ssl,
                 cert=self._cert,
             )
-        return self._async_client
+        return self.__dict__["_async_client"]
 
     @property
     def _sync_client(self) -> httpx.Client:

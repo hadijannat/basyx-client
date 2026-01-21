@@ -11,8 +11,10 @@ from typing import TYPE_CHECKING
 import pytest
 from basyx.aas import model
 
+from basyx_client import AASClient
+
 if TYPE_CHECKING:
-    from basyx_client import AASClient
+    pass
 
 
 @pytest.mark.integration
@@ -164,20 +166,20 @@ class TestSubmodelElementsIntegration:
         try:
             submodel_client.submodels.create(sm)
 
-            # Get initial value
+            # Get initial value (API returns string representation)
             initial = submodel_client.submodels.elements.get_value(
                 sample_submodel_identifier, "Counter"
             )
-            assert initial == 0
+            assert initial == "0"
 
             # Set new value
             submodel_client.submodels.elements.set_value(sample_submodel_identifier, "Counter", 42)
 
-            # Verify update
+            # Verify update (API returns string representation)
             updated = submodel_client.submodels.elements.get_value(
                 sample_submodel_identifier, "Counter"
             )
-            assert updated == 42
+            assert updated == "42"
 
         finally:
             try:

@@ -163,24 +163,28 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         Args:
             submodel_id: The identifier of the submodel
             id_short_path: Path to the element
-            value: The new value to set
+            value: The new value to set (will be converted to string for primitives)
         """
         encoded_sm_id = encode_identifier(submodel_id)
         encoded_path = encode_id_short_path(id_short_path)
+        # BaSyx expects primitive values as strings
+        json_value = str(value) if not isinstance(value, (str, dict, list)) else value
         self._request(
             "PATCH",
             f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$value",
-            json=value,
+            json=json_value,
         )
 
     async def set_value_async(self, submodel_id: str, id_short_path: str, value: Any) -> None:
         """Async version of set_value()."""
         encoded_sm_id = encode_identifier(submodel_id)
         encoded_path = encode_id_short_path(id_short_path)
+        # BaSyx expects primitive values as strings
+        json_value = str(value) if not isinstance(value, (str, dict, list)) else value
         await self._request_async(
             "PATCH",
             f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$value",
-            json=value,
+            json=json_value,
         )
 
     def create(
@@ -541,6 +545,9 @@ class SubmodelRepositoryEndpoint(BaseEndpoint):
         encoded_id = encode_identifier(submodel_id)
         payload = serialize(submodel)
         response = self._request("PUT", f"/submodels/{encoded_id}", json=payload)
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return self.get(submodel_id)
         return deserialize_submodel(cast("dict[str, Any]", response))
 
     async def update_async(self, submodel_id: str, submodel: model.Submodel) -> model.Submodel:
@@ -548,6 +555,9 @@ class SubmodelRepositoryEndpoint(BaseEndpoint):
         encoded_id = encode_identifier(submodel_id)
         payload = serialize(submodel)
         response = await self._request_async("PUT", f"/submodels/{encoded_id}", json=payload)
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return await self.get_async(submodel_id)
         return deserialize_submodel(cast("dict[str, Any]", response))
 
     def delete(self, submodel_id: str) -> None:

@@ -10,8 +10,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from basyx_client import AASClient
+
 if TYPE_CHECKING:
-    from basyx_client import AASClient
+    pass
 
 
 @pytest.mark.integration
@@ -71,7 +73,15 @@ class TestAASRegistryIntegration:
             "id": sample_aas_identifier,
             "idShort": "OriginalDescriptor",
             "assetKind": "Instance",
-            "endpoints": [],
+            "endpoints": [
+                {
+                    "interface": "AAS-3.0",
+                    "protocolInformation": {
+                        "href": f"http://localhost:8081/shells/{sample_aas_identifier}",
+                        "endpointProtocol": "HTTP",
+                    },
+                }
+            ],
         }
 
         try:
@@ -99,7 +109,15 @@ class TestAASRegistryIntegration:
             "id": sample_aas_identifier,
             "idShort": "ToDeleteDescriptor",
             "assetKind": "Instance",
-            "endpoints": [],
+            "endpoints": [
+                {
+                    "interface": "AAS-3.0",
+                    "protocolInformation": {
+                        "href": f"http://localhost:8081/shells/{sample_aas_identifier}",
+                        "endpointProtocol": "HTTP",
+                    },
+                }
+            ],
         }
         registry_client.aas_registry.create(descriptor)
 
@@ -122,14 +140,14 @@ class TestAASRegistryIntegration:
 class TestSubmodelRegistryIntegration:
     """Integration tests for Submodel Registry operations."""
 
-    def test_list_submodel_descriptors(self, registry_client: AASClient) -> None:
+    def test_list_submodel_descriptors(self, submodel_registry_client: AASClient) -> None:
         """Test listing submodel descriptors."""
-        result = registry_client.submodel_registry.list(limit=10)
+        result = submodel_registry_client.submodel_registry.list(limit=10)
         assert hasattr(result, "items")
         assert isinstance(result.items, list)
 
     def test_create_and_get_submodel_descriptor(
-        self, registry_client: AASClient, sample_submodel_identifier: str
+        self, submodel_registry_client: AASClient, sample_submodel_identifier: str
     ) -> None:
         """Test creating and retrieving a submodel descriptor."""
         descriptor = {
@@ -139,7 +157,7 @@ class TestSubmodelRegistryIntegration:
                 {
                     "interface": "SUBMODEL-3.0",
                     "protocolInformation": {
-                        "href": f"http://localhost:8082/api/v3.0/submodels/{sample_submodel_identifier}",
+                        "href": f"http://localhost:8082/submodels/{sample_submodel_identifier}",
                         "endpointProtocol": "HTTP",
                     },
                 }
@@ -148,17 +166,17 @@ class TestSubmodelRegistryIntegration:
 
         try:
             # Create
-            created = registry_client.submodel_registry.create(descriptor)
+            created = submodel_registry_client.submodel_registry.create(descriptor)
             assert isinstance(created, dict)
 
             # Get
-            retrieved = registry_client.submodel_registry.get(sample_submodel_identifier)
+            retrieved = submodel_registry_client.submodel_registry.get(sample_submodel_identifier)
             assert isinstance(retrieved, dict)
             assert retrieved.get("id") == sample_submodel_identifier
 
         finally:
             try:
-                registry_client.submodel_registry.delete(sample_submodel_identifier)
+                submodel_registry_client.submodel_registry.delete(sample_submodel_identifier)
             except Exception:
                 pass
 

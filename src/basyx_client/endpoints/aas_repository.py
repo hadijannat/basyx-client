@@ -177,6 +177,9 @@ class AASRepositoryEndpoint(BaseEndpoint):
         encoded_id = encode_identifier(aas_id)
         payload = serialize(aas)
         response = self._request("PUT", f"/shells/{encoded_id}", json=payload)
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return self.get(aas_id)
         return deserialize_aas(response)
 
     async def update_async(
@@ -188,6 +191,9 @@ class AASRepositoryEndpoint(BaseEndpoint):
         encoded_id = encode_identifier(aas_id)
         payload = serialize(aas)
         response = await self._request_async("PUT", f"/shells/{encoded_id}", json=payload)
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return await self.get_async(aas_id)
         return deserialize_aas(response)
 
     def delete(self, aas_id: str) -> None:
