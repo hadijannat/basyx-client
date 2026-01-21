@@ -28,9 +28,7 @@ def pytest_configure(config: pytest.Config) -> None:
 # Default URLs for BaSyx services (can be overridden via environment)
 # Note: BaSyx Docker images serve API at root, not /api/v3.0
 AAS_REPOSITORY_URL = os.environ.get("AAS_REPOSITORY_URL", "http://localhost:8081")
-SUBMODEL_REPOSITORY_URL = os.environ.get(
-    "SUBMODEL_REPOSITORY_URL", "http://localhost:8082"
-)
+SUBMODEL_REPOSITORY_URL = os.environ.get("SUBMODEL_REPOSITORY_URL", "http://localhost:8082")
 AAS_REGISTRY_URL = os.environ.get("AAS_REGISTRY_URL", "http://localhost:8084")
 SUBMODEL_REGISTRY_URL = os.environ.get("SUBMODEL_REGISTRY_URL", "http://localhost:8085")
 
