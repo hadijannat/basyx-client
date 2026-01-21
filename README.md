@@ -1,7 +1,7 @@
 # basyx-client
 
-[![PyPI version](https://img.shields.io/pypi/v/basyx-client)](https://pypi.org/project/basyx-client/)
-[![Python versions](https://img.shields.io/pypi/pyversions/basyx-client)](https://pypi.org/project/basyx-client/)
+[![PyPI version](https://img.shields.io/pypi/v/basyx-client?label=PyPI&cacheSeconds=300)](https://pypi.org/project/basyx-client/)
+[![Python versions](https://img.shields.io/pypi/pyversions/basyx-client?label=python&cacheSeconds=300)](https://pypi.org/project/basyx-client/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 [![CI](https://github.com/hadijannat/basyx-client/actions/workflows/ci.yml/badge.svg)](https://github.com/hadijannat/basyx-client/actions)
 
