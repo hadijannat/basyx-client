@@ -42,7 +42,7 @@ async def create_sample_aas(client: AASClient, index: int) -> model.AssetAdminis
 async def main() -> None:
     print("=== Async Operations Example ===\n")
 
-    async with AASClient("http://localhost:8081/api/v3.0") as client:
+    async with AASClient("http://localhost:8081") as client:
         # Create multiple AAS concurrently
         print("Creating 5 AAS concurrently...")
 
@@ -84,7 +84,7 @@ async def main() -> None:
     # Example with submodel repository
     print("\n=== Async Submodel Operations ===\n")
 
-    async with AASClient("http://localhost:8082/api/v3.0") as sm_client:
+    async with AASClient("http://localhost:8082") as sm_client:
         # Create sample submodels concurrently
         submodels = []
         for i in range(3):

@@ -17,7 +17,7 @@ basyx-client eliminates all of this friction:
 from basyx_client import AASClient
 
 # All encoding happens automatically
-with AASClient("http://localhost:8081/api/v3.0") as client:
+with AASClient("http://localhost:8081") as client:
     # Get an AAS - returns basyx.aas.model.AssetAdministrationShell, not dict
     aas = client.shells.get("https://acme.org/ids/aas/55")
     print(aas.id_short)  # Type-safe attribute access
@@ -48,10 +48,14 @@ pip install basyx-client
 
 ### Basic Usage
 
+Note: the BaSyx Docker images in `docker-compose.yml` expose the API at the root
+(`http://localhost:8081`, no `/api/v3.0`). Some deployments mount the API at
+`/api/v3.0` — set `base_url` accordingly.
+
 ```python
 from basyx_client import AASClient
 
-with AASClient("http://localhost:8081/api/v3.0") as client:
+with AASClient("http://localhost:8081") as client:
     # List all AAS
     result = client.shells.list()
     for aas in result.items:
@@ -82,7 +86,7 @@ import asyncio
 from basyx_client import AASClient
 
 async def main():
-    async with AASClient("http://localhost:8081/api/v3.0") as client:
+    async with AASClient("http://localhost:8081") as client:
         # Concurrent fetches
         aas1, aas2 = await asyncio.gather(
             client.shells.get_async("urn:example:aas:1"),
@@ -126,7 +130,7 @@ client = AASClient(
 from basyx_client import AASClient
 from basyx_client.exceptions import ResourceNotFoundError, ConflictError
 
-with AASClient("http://localhost:8081/api/v3.0") as client:
+with AASClient("http://localhost:8081") as client:
     try:
         aas = client.shells.get("urn:nonexistent:aas")
     except ResourceNotFoundError as e:

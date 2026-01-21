@@ -339,6 +339,9 @@ class AASRepositoryEndpoint(BaseEndpoint):
         encoded_id = encode_identifier(aas_id)
         payload = serialize(asset_info)
         response = self._request("PUT", f"/shells/{encoded_id}/asset-information", json=payload)
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return self.get_asset_info(aas_id)
         return deserialize_asset_information(response)
 
     async def update_asset_info_async(
@@ -354,6 +357,9 @@ class AASRepositoryEndpoint(BaseEndpoint):
             f"/shells/{encoded_id}/asset-information",
             json=payload,
         )
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return await self.get_asset_info_async(aas_id)
         return deserialize_asset_information(response)
 
     def _parse_paginated_response(

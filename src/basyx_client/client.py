@@ -87,6 +87,8 @@ class AASClient:
         timeout: float = 30.0,
         verify_ssl: bool = True,
         cert: str | tuple[str, str] | CertificateConfig | None = None,
+        encode_package_id: bool = True,
+        encode_discovery_asset_ids: bool = True,
     ) -> None:
         """
         Initialize the AAS client.
@@ -104,12 +106,16 @@ class AASClient:
                   - Path to combined cert/key file
                   - Tuple of (cert_path, key_path)
                   - CertificateConfig instance
+            encode_package_id: Base64url encode AASX package IDs in paths (default True)
+            encode_discovery_asset_ids: Base64url encode Discovery assetIds query params (default True)
         """
         self.base_url = base_url.rstrip("/")
         self._timeout = timeout
         self._verify_ssl = verify_ssl
         self._auth = self._resolve_auth(auth)
         self._cert = self._resolve_cert(cert)
+        self._encode_package_id = encode_package_id
+        self._encode_discovery_asset_ids = encode_discovery_asset_ids
 
         # HTTP clients (lazy initialization) - stored in __dict__ to avoid property recursion
         self.__dict__["_sync_client"] = None

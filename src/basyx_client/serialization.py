@@ -14,7 +14,11 @@ comments for interactions with the BaSyx JSON adapter.
 
 from __future__ import annotations
 
+import base64
 import json
+from datetime import date, datetime, time
+from decimal import Decimal
+from enum import Enum
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from basyx.aas import model
@@ -151,3 +155,32 @@ def serialize_many(objects: Iterable[model.Referable]) -> list[dict[str, Any]]:
         List of dictionaries suitable for JSON API request body
     """
     return [serialize(obj) for obj in objects]
+
+
+def serialize_value(value: Any) -> Any:
+    """
+    Serialize a primitive value for $value endpoints.
+
+    The AAS HTTP API expects primitive values as strings. This helper applies
+    canonical formatting for common Python types.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float, Decimal)):
+        return str(value)
+    if isinstance(value, datetime):
+        iso = value.isoformat()
+        if iso.endswith("+00:00"):
+            return iso[:-6] + "Z"
+        return iso
+    if isinstance(value, (date, time)):
+        return value.isoformat()
+    if isinstance(value, bytes):
+        return base64.b64encode(value).decode("ascii")
+    if isinstance(value, Enum):
+        return str(value.value)
+    if isinstance(value, (str, dict, list)):
+        return value
+    return str(value)

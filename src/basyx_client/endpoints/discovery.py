@@ -77,13 +77,15 @@ class DiscoveryEndpoint(BaseEndpoint):
         if cursor:
             params["cursor"] = cursor
 
-        # Asset IDs are passed as query parameters
-        # Format: assetIds=name:value (base64url encoded)
+        # Asset IDs are passed as query parameters.
+        # Format: assetIds=name:value (optionally base64url encoded)
         encoded_asset_ids = []
         for aid in asset_ids:
-            # Encode as "name:value"
             id_string = f"{aid['name']}:{aid['value']}"
-            encoded_asset_ids.append(encode_identifier(id_string))
+            if self._client._encode_discovery_asset_ids:
+                encoded_asset_ids.append(encode_identifier(id_string))
+            else:
+                encoded_asset_ids.append(id_string)
         params["assetIds"] = encoded_asset_ids
 
         response = self._request("GET", "/lookup/shells", params=params)
@@ -103,7 +105,10 @@ class DiscoveryEndpoint(BaseEndpoint):
         encoded_asset_ids = []
         for aid in asset_ids:
             id_string = f"{aid['name']}:{aid['value']}"
-            encoded_asset_ids.append(encode_identifier(id_string))
+            if self._client._encode_discovery_asset_ids:
+                encoded_asset_ids.append(encode_identifier(id_string))
+            else:
+                encoded_asset_ids.append(id_string)
         params["assetIds"] = encoded_asset_ids
 
         response = await self._request_async("GET", "/lookup/shells", params=params)

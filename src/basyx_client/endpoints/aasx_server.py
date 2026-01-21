@@ -40,6 +40,12 @@ class AASXServerEndpoint(BaseEndpoint):
         aas = client.packages.get_aas_from_package("package-123", "urn:example:aas:456")
     """
 
+    def _encode_package_id(self, package_id: str) -> str:
+        """Encode package IDs if configured to do so."""
+        if self._client._encode_package_id:
+            return encode_identifier(package_id)
+        return package_id
+
     def list(
         self,
         limit: int = 100,
@@ -95,7 +101,7 @@ class AASXServerEndpoint(BaseEndpoint):
         Raises:
             ResourceNotFoundError: If package not found
         """
-        encoded_id = encode_identifier(package_id)
+        encoded_id = self._encode_package_id(package_id)
         url = f"{self._client.base_url}/packages/{encoded_id}"
 
         response = self._client._sync_client.get(url)
@@ -111,7 +117,7 @@ class AASXServerEndpoint(BaseEndpoint):
 
     async def get_async(self, package_id: str) -> bytes:
         """Async version of get()."""
-        encoded_id = encode_identifier(package_id)
+        encoded_id = self._encode_package_id(package_id)
         url = f"{self._client.base_url}/packages/{encoded_id}"
 
         response = await self._client._async_client.get(url)
@@ -226,7 +232,7 @@ class AASXServerEndpoint(BaseEndpoint):
             BadRequestError: If package data is invalid
         """
         file_path = Path(file_path)
-        encoded_id = encode_identifier(package_id)
+        encoded_id = self._encode_package_id(package_id)
 
         with open(file_path, "rb") as f:
             content = f.read()
@@ -254,7 +260,7 @@ class AASXServerEndpoint(BaseEndpoint):
     ) -> None:
         """Async version of update()."""
         file_path = Path(file_path)
-        encoded_id = encode_identifier(package_id)
+        encoded_id = self._encode_package_id(package_id)
 
         with open(file_path, "rb") as f:
             content = f.read()
@@ -285,12 +291,12 @@ class AASXServerEndpoint(BaseEndpoint):
         Raises:
             ResourceNotFoundError: If package not found
         """
-        encoded_id = encode_identifier(package_id)
+        encoded_id = self._encode_package_id(package_id)
         self._request("DELETE", f"/packages/{encoded_id}")
 
     async def delete_async(self, package_id: str) -> None:
         """Async version of delete()."""
-        encoded_id = encode_identifier(package_id)
+        encoded_id = self._encode_package_id(package_id)
         await self._request_async("DELETE", f"/packages/{encoded_id}")
 
     def get_aas_from_package(
@@ -311,7 +317,7 @@ class AASXServerEndpoint(BaseEndpoint):
         Raises:
             ResourceNotFoundError: If package or AAS not found
         """
-        encoded_pkg_id = encode_identifier(package_id)
+        encoded_pkg_id = self._encode_package_id(package_id)
         encoded_aas_id = encode_identifier(aas_id)
         response = self._request("GET", f"/packages/{encoded_pkg_id}/aas/{encoded_aas_id}")
         return deserialize_aas(response)
@@ -322,7 +328,7 @@ class AASXServerEndpoint(BaseEndpoint):
         aas_id: str,
     ) -> model.AssetAdministrationShell:
         """Async version of get_aas_from_package()."""
-        encoded_pkg_id = encode_identifier(package_id)
+        encoded_pkg_id = self._encode_package_id(package_id)
         encoded_aas_id = encode_identifier(aas_id)
         response = await self._request_async(
             "GET",

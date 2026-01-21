@@ -31,6 +31,7 @@ from basyx_client.serialization import (
     deserialize_submodel,
     deserialize_submodel_element,
     serialize,
+    serialize_value,
 )
 
 if TYPE_CHECKING:
@@ -167,8 +168,7 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         """
         encoded_sm_id = encode_identifier(submodel_id)
         encoded_path = encode_id_short_path(id_short_path)
-        # BaSyx expects primitive values as strings
-        json_value = str(value) if not isinstance(value, (str, dict, list)) else value
+        json_value = serialize_value(value)
         self._request(
             "PATCH",
             f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$value",
@@ -179,8 +179,7 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         """Async version of set_value()."""
         encoded_sm_id = encode_identifier(submodel_id)
         encoded_path = encode_id_short_path(id_short_path)
-        # BaSyx expects primitive values as strings
-        json_value = str(value) if not isinstance(value, (str, dict, list)) else value
+        json_value = serialize_value(value)
         await self._request_async(
             "PATCH",
             f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$value",
@@ -214,6 +213,30 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         )
         return deserialize_submodel_element(cast("dict[str, Any]", response))
 
+    def create_root(
+        self,
+        submodel_id: str,
+        element: model.SubmodelElement,
+    ) -> model.SubmodelElement:
+        """
+        Create a new submodel element at the root.
+
+        Args:
+            submodel_id: The identifier of the submodel
+            element: The element to create at the root level
+
+        Returns:
+            The created SubmodelElement
+        """
+        encoded_sm_id = encode_identifier(submodel_id)
+        payload = serialize(element)
+        response = self._request(
+            "POST",
+            f"/submodels/{encoded_sm_id}/submodel-elements",
+            json=payload,
+        )
+        return deserialize_submodel_element(cast("dict[str, Any]", response))
+
     async def create_async(
         self,
         submodel_id: str,
@@ -227,6 +250,21 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         response = await self._request_async(
             "POST",
             f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}",
+            json=payload,
+        )
+        return deserialize_submodel_element(cast("dict[str, Any]", response))
+
+    async def create_root_async(
+        self,
+        submodel_id: str,
+        element: model.SubmodelElement,
+    ) -> model.SubmodelElement:
+        """Async version of create_root()."""
+        encoded_sm_id = encode_identifier(submodel_id)
+        payload = serialize(element)
+        response = await self._request_async(
+            "POST",
+            f"/submodels/{encoded_sm_id}/submodel-elements",
             json=payload,
         )
         return deserialize_submodel_element(cast("dict[str, Any]", response))

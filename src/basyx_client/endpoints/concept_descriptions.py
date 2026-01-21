@@ -156,6 +156,9 @@ class ConceptDescriptionEndpoint(BaseEndpoint):
         encoded_id = encode_identifier(cd_id)
         payload = serialize(cd)
         response = self._request("PUT", f"/concept-descriptions/{encoded_id}", json=payload)
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return self.get(cd_id)
         return deserialize_concept_description(response)
 
     async def update_async(
@@ -171,6 +174,9 @@ class ConceptDescriptionEndpoint(BaseEndpoint):
             f"/concept-descriptions/{encoded_id}",
             json=payload,
         )
+        # Server returns 204 No Content on success, so re-fetch
+        if response is None:
+            return await self.get_async(cd_id)
         return deserialize_concept_description(response)
 
     def delete(self, cd_id: str) -> None:

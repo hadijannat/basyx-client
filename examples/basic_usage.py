@@ -25,7 +25,7 @@ from basyx_client.exceptions import ConflictError, ResourceNotFoundError
 def main() -> None:
     # Create a client for the AAS Repository
     # The client handles all identifier encoding automatically
-    with AASClient("http://localhost:8081/api/v3.0") as aas_client:
+    with AASClient("http://localhost:8081") as aas_client:
         print("=== AAS Repository Operations ===\n")
 
         # List existing AAS
@@ -60,7 +60,7 @@ def main() -> None:
         print(f"Global Asset ID: {asset_info.global_asset_id}")
 
     # Create a client for the Submodel Repository
-    with AASClient("http://localhost:8082/api/v3.0") as sm_client:
+    with AASClient("http://localhost:8082") as sm_client:
         print("\n=== Submodel Repository Operations ===\n")
 
         # Create a submodel with elements
@@ -133,7 +133,7 @@ def main() -> None:
 
     print("\n=== Error Handling ===\n")
 
-    with AASClient("http://localhost:8081/api/v3.0") as client:
+    with AASClient("http://localhost:8081") as client:
         # Try to get a non-existent AAS
         try:
             client.shells.get("https://example.org/aas/nonexistent")
