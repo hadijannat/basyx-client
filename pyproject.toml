@@ -39,9 +39,11 @@ dev = [
 oauth = ["authlib>=1.3"]
 
 [project.urls]
-Homepage = "https://github.com/eclipse-basyx/basyx-python-sdk"
-Documentation = "https://github.com/eclipse-basyx/basyx-python-sdk"
-Repository = "https://github.com/eclipse-basyx/basyx-python-sdk"
+Homepage = "https://github.com/hadijannat/basyx-client"
+Documentation = "https://github.com/hadijannat/basyx-client#readme"
+Repository = "https://github.com/hadijannat/basyx-client"
+Changelog = "https://github.com/hadijannat/basyx-client/blob/main/CHANGELOG.md"
+Issues = "https://github.com/hadijannat/basyx-client/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/basyx_client"]
