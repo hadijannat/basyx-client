@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -49,7 +48,7 @@ def list_elements(
     ctx: typer.Context,
     submodel_id: str = typer.Argument(..., help="Submodel identifier"),
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
     all_pages: bool = typer.Option(False, "--all", "-a", help="Fetch all pages"),
 ) -> None:
     """List all elements in a submodel."""
@@ -90,7 +89,9 @@ def list_elements(
 def get_element(
     ctx: typer.Context,
     submodel_id: str = typer.Argument(..., help="Submodel identifier"),
-    id_short_path: str = typer.Argument(..., help="Element idShort path (e.g., Sensors.Temperature)"),
+    id_short_path: str = typer.Argument(
+        ..., help="Element idShort path (e.g., Sensors.Temperature)"
+    ),
 ) -> None:
     """Get a specific submodel element."""
     print_verbose(ctx, f"Fetching element: {submodel_id} / {id_short_path}")
@@ -157,7 +158,7 @@ def create_element(
         exists=True,
         readable=True,
     ),
-    parent_path: Optional[str] = typer.Option(
+    parent_path: str | None = typer.Option(
         None, "--parent", "-p", help="Parent element idShort path (for nested elements)"
     ),
 ) -> None:
@@ -170,9 +171,7 @@ def create_element(
                 data = json.load(f)
 
             if parent_path:
-                elem = client.submodels.elements.create_nested(
-                    submodel_id, parent_path, data
-                )
+                elem = client.submodels.elements.create_nested(submodel_id, parent_path, data)
             else:
                 elem = client.submodels.elements.create(submodel_id, data)
 
@@ -216,7 +215,7 @@ def invoke_operation(
     ctx: typer.Context,
     submodel_id: str = typer.Argument(..., help="Submodel identifier"),
     id_short_path: str = typer.Argument(..., help="Operation idShort path"),
-    input_file: Optional[Path] = typer.Option(
+    input_file: Path | None = typer.Option(
         None,
         "--input",
         "-i",
@@ -225,7 +224,7 @@ def invoke_operation(
         readable=True,
     ),
     async_mode: bool = typer.Option(False, "--async", help="Invoke asynchronously"),
-    timeout: Optional[int] = typer.Option(
+    timeout: int | None = typer.Option(
         None, "--timeout", "-t", help="Operation timeout in seconds"
     ),
 ) -> None:

@@ -1,6 +1,5 @@
 """Tests for CLI commands."""
 
-import json
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -112,9 +111,7 @@ class TestShellsCommands:
         """Test basyx shells get."""
         mock_client.shells.get.return_value = MockShell("urn:aas:1", "Shell1")
 
-        result = runner.invoke(
-            app, ["shells", "get", "urn:aas:1", "--url", "http://test:8081"]
-        )
+        result = runner.invoke(app, ["shells", "get", "urn:aas:1", "--url", "http://test:8081"])
         assert result.exit_code == 0
 
 
@@ -140,9 +137,7 @@ class TestSubmodelsCommands:
         mock_sm = MockSubmodel("urn:sm:1", "Submodel1")
         mock_client.submodels.get.return_value = mock_sm
 
-        result = runner.invoke(
-            app, ["submodels", "get", "urn:sm:1", "--url", "http://test:8081"]
-        )
+        result = runner.invoke(app, ["submodels", "get", "urn:sm:1", "--url", "http://test:8081"])
         assert result.exit_code == 0
 
 
@@ -160,9 +155,7 @@ class TestElementsCommands:
             paging_metadata=None,
         )
 
-        result = runner.invoke(
-            app, ["elements", "list", "urn:sm:1", "--url", "http://test:8081"]
-        )
+        result = runner.invoke(app, ["elements", "list", "urn:sm:1", "--url", "http://test:8081"])
         assert result.exit_code == 0
 
     def test_elements_get_value(self, mock_client):
@@ -254,7 +247,5 @@ class TestErrorHandling:
 
         mock_client.shells.get.side_effect = ResourceNotFoundError("Not found")
 
-        result = runner.invoke(
-            app, ["shells", "get", "nonexistent", "--url", "http://test:8081"]
-        )
+        result = runner.invoke(app, ["shells", "get", "nonexistent", "--url", "http://test:8081"])
         assert result.exit_code == 1

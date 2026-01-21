@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -62,7 +61,7 @@ def _get_semantic_id(desc: dict) -> str:
 def list_aas_descriptors(
     ctx: typer.Context,
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
     all_pages: bool = typer.Option(False, "--all", "-a", help="Fetch all pages"),
 ) -> None:
     """List all AAS descriptors in the registry."""
@@ -169,7 +168,7 @@ def delete_aas_descriptor(
 def list_sm_descriptors(
     ctx: typer.Context,
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
     all_pages: bool = typer.Option(False, "--all", "-a", help="Fetch all pages"),
 ) -> None:
     """List all submodel descriptors in the registry."""

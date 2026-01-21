@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -49,8 +48,8 @@ def _extract_concept_summary(cd: object) -> dict[str, str]:
 def list_concepts(
     ctx: typer.Context,
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
-    id_short: Optional[str] = typer.Option(None, "--id-short", help="Filter by idShort"),
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    id_short: str | None = typer.Option(None, "--id-short", help="Filter by idShort"),
     all_pages: bool = typer.Option(False, "--all", "-a", help="Fetch all pages"),
 ) -> None:
     """List all concept descriptions."""

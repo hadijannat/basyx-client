@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from basyx_client.cli.config import get_client_from_context
@@ -24,7 +22,7 @@ def lookup(
     asset_id_type: str = typer.Argument(..., help="Asset ID type (e.g., globalAssetId)"),
     asset_id_value: str = typer.Argument(..., help="Asset ID value"),
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
 ) -> None:
     """Look up AAS IDs by asset ID.
 
@@ -106,9 +104,7 @@ def unlink(
         basyx discovery unlink "urn:example:aas:1" globalAssetId "urn:example:asset:1"
     """
     if not force:
-        confirm = typer.confirm(
-            f"Unlink {asset_id_type}={asset_id_value} from AAS {aas_id}?"
-        )
+        confirm = typer.confirm(f"Unlink {asset_id_type}={asset_id_value} from AAS {aas_id}?")
         if not confirm:
             print_error("Aborted")
             raise typer.Exit(0)

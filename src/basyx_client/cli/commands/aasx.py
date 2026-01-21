@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -31,8 +30,8 @@ def _extract_package_summary(pkg: dict) -> dict[str, str]:
 def list_packages(
     ctx: typer.Context,
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
-    aas_id: Optional[str] = typer.Option(None, "--aas-id", help="Filter by AAS ID"),
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    aas_id: str | None = typer.Option(None, "--aas-id", help="Filter by AAS ID"),
     all_pages: bool = typer.Option(False, "--all", "-a", help="Fetch all pages"),
 ) -> None:
     """List all AASX packages."""
@@ -43,9 +42,7 @@ def list_packages(
             if all_pages:
                 from basyx_client.pagination import iterate_pages
 
-                packages = list(
-                    iterate_pages(client.packages.list, limit=limit, aas_id=aas_id)
-                )
+                packages = list(iterate_pages(client.packages.list, limit=limit, aas_id=aas_id))
             else:
                 result = client.packages.list(limit=limit, cursor=cursor, aas_id=aas_id)
                 packages = result.result
@@ -118,9 +115,7 @@ def upload_package(
         exists=True,
         readable=True,
     ),
-    aas_id: Optional[str] = typer.Option(
-        None, "--aas-id", help="Associate with specific AAS ID"
-    ),
+    aas_id: str | None = typer.Option(None, "--aas-id", help="Associate with specific AAS ID"),
 ) -> None:
     """Upload an AASX package."""
     print_verbose(ctx, f"Uploading package: {file}")

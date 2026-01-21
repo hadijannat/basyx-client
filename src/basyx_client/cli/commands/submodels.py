@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -41,8 +40,8 @@ def _extract_submodel_summary(sm: object) -> dict[str, str]:
 def list_submodels(
     ctx: typer.Context,
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
-    semantic_id: Optional[str] = typer.Option(
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    semantic_id: str | None = typer.Option(
         None, "--semantic-id", "-s", help="Filter by semantic ID"
     ),
     all_pages: bool = typer.Option(False, "--all", "-a", help="Fetch all pages"),
@@ -63,9 +62,7 @@ def list_submodels(
                     )
                 )
             else:
-                result = client.submodels.list(
-                    limit=limit, cursor=cursor, semantic_id=semantic_id
-                )
+                result = client.submodels.list(limit=limit, cursor=cursor, semantic_id=semantic_id)
                 submodels = result.result
 
             format_output(

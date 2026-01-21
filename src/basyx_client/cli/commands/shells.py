@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 
@@ -38,7 +37,7 @@ def _extract_shell_summary(shell: object) -> dict[str, str]:
 def list_shells(
     ctx: typer.Context,
     limit: int = typer.Option(100, "--limit", "-l", help="Maximum number of results"),
-    cursor: Optional[str] = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
+    cursor: str | None = typer.Option(None, "--cursor", "-c", help="Pagination cursor"),
     all_pages: bool = typer.Option(False, "--all", "-a", help="Fetch all pages"),
 ) -> None:
     """List all AAS shells."""

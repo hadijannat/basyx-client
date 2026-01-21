@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Sequence
+from typing import Any
 
 import yaml
 from rich.console import Console
@@ -13,7 +14,7 @@ from rich.table import Table
 console = Console()
 
 # Global output format setting
-_output_format: "OutputFormat" = None  # type: ignore
+_output_format: OutputFormat = None  # type: ignore
 
 
 class OutputFormat(str, Enum):
@@ -102,9 +103,7 @@ def _model_to_dict(obj: Any) -> dict[str, Any]:
                 if hasattr(val, "__dict__"):
                     result[attr] = _model_to_dict(val)
                 elif isinstance(val, (list, tuple, set)):
-                    result[attr] = [
-                        _model_to_dict(v) if hasattr(v, "__dict__") else v for v in val
-                    ]
+                    result[attr] = [_model_to_dict(v) if hasattr(v, "__dict__") else v for v in val]
                 else:
                     result[attr] = val
 

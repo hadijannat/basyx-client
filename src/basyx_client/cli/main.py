@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
+from basyx_client.cli.commands import (
+    aasx,
+    concepts,
+    discovery,
+    elements,
+    registry,
+    shells,
+    submodels,
+)
 from basyx_client.cli.config import (
     ConfigManager,
     config_app,
-    get_client_from_context,
 )
 from basyx_client.cli.output import OutputFormat, set_output_format
 
@@ -33,21 +39,21 @@ def version_callback(value: bool) -> None:
 @app.callback()
 def main(
     ctx: typer.Context,
-    url: Optional[str] = typer.Option(
+    url: str | None = typer.Option(
         None,
         "--url",
         "-u",
         envvar="BASYX_URL",
         help="Server URL (overrides profile)",
     ),
-    profile: Optional[str] = typer.Option(
+    profile: str | None = typer.Option(
         None,
         "--profile",
         "-p",
         envvar="BASYX_PROFILE",
         help="Config profile to use",
     ),
-    token: Optional[str] = typer.Option(
+    token: str | None = typer.Option(
         None,
         "--token",
         "-t",
@@ -66,7 +72,7 @@ def main(
         "-v",
         help="Enable verbose output",
     ),
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-V",
@@ -90,17 +96,6 @@ def main(
 
 # Register command groups
 app.add_typer(config_app, name="config", help="Manage CLI configuration")
-
-# Import and register command modules
-from basyx_client.cli.commands import (
-    aasx,
-    concepts,
-    discovery,
-    elements,
-    registry,
-    shells,
-    submodels,
-)
 
 app.add_typer(shells.app, name="shells", help="AAS shell operations")
 app.add_typer(submodels.app, name="submodels", help="Submodel operations")

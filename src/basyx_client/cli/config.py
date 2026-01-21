@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import typer
 import yaml
@@ -109,7 +109,7 @@ class ConfigManager:
         return current
 
 
-def get_client_from_context(ctx: typer.Context) -> "AASClient":
+def get_client_from_context(ctx: typer.Context) -> AASClient:
     """Create an AASClient from the CLI context."""
     from basyx_client import AASClient
     from basyx_client.auth import BearerAuth
@@ -175,7 +175,7 @@ config_app = typer.Typer(help="Manage CLI configuration")
 @config_app.command("show")
 def config_show(
     ctx: typer.Context,
-    profile: Optional[str] = typer.Argument(None, help="Profile name to show"),
+    profile: str | None = typer.Argument(None, help="Profile name to show"),
 ) -> None:
     """Show current configuration or a specific profile."""
     config_mgr: ConfigManager = ctx.obj["config"]
