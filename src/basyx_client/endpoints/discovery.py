@@ -183,9 +183,7 @@ class DiscoveryEndpoint(BaseEndpoint):
         )
         self._request("DELETE", f"/lookup/shells/{encoded_aas}/{encoded_asset}")
 
-    async def unlink_asset_from_aas_async(
-        self, aas_id: str, asset_id: dict[str, str]
-    ) -> None:
+    async def unlink_asset_from_aas_async(self, aas_id: str, asset_id: dict[str, str]) -> None:
         """Async version of unlink_asset_from_aas()."""
         encoded_aas = encode_identifier(aas_id)
         asset_string = f"{asset_id['name']}:{asset_id['value']}"

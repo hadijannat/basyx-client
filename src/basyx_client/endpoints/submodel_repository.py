@@ -147,7 +147,9 @@ class SubmodelElementsEndpoint(BaseEndpoint):
         )
         return response
 
-    def get_metadata(self, submodel_id: str, id_short_path: str) -> dict[str, Any] | list[Any] | None:
+    def get_metadata(
+        self, submodel_id: str, id_short_path: str
+    ) -> dict[str, Any] | list[Any] | None:
         """
         Get the metadata of a submodel element.
 
@@ -165,7 +167,9 @@ class SubmodelElementsEndpoint(BaseEndpoint):
             f"/submodels/{encoded_sm_id}/submodel-elements/{encoded_path}/$metadata",
         )
 
-    def get_reference(self, submodel_id: str, id_short_path: str) -> dict[str, Any] | list[Any] | None:
+    def get_reference(
+        self, submodel_id: str, id_short_path: str
+    ) -> dict[str, Any] | list[Any] | None:
         """
         Get the reference of a submodel element.
 

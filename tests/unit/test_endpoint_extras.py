@@ -198,9 +198,7 @@ async def test_async_operation_status_async(monkeypatch: pytest.MonkeyPatch) -> 
 
     monkeypatch.setattr(elements, "_request_async", fake_request_async)
 
-    result = await elements.get_async_operation_status_async(
-        "urn:example:sm:1", "Op", "handle-1"
-    )
+    result = await elements.get_async_operation_status_async("urn:example:sm:1", "Op", "handle-1")
     assert result == {"status": "running"}
     await client.aclose()
 
@@ -223,11 +221,10 @@ async def test_async_operation_result_async(monkeypatch: pytest.MonkeyPatch) -> 
 
     monkeypatch.setattr(elements, "_request_async", fake_request_async)
 
-    result = await elements.get_async_operation_result_async(
-        "urn:example:sm:1", "Op", "handle-1"
-    )
+    result = await elements.get_async_operation_result_async("urn:example:sm:1", "Op", "handle-1")
     assert result == {"outputArguments": []}
     await client.aclose()
+
 
 def test_aasx_upload_sends_file_and_params(
     monkeypatch: pytest.MonkeyPatch,
